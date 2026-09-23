@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quinn AI</title>
-    <!-- Google Fonts: Inter for that premium, clean cyber-typography look -->
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         * {
@@ -18,45 +17,36 @@
         body {
             background-color: #060608;
             color: #FFFFFF;
-            overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* --- SEA SOUL VIOLET BRAND HEADER --- */
         .app-header {
             padding: 18px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background: #0D0D11;
             border-bottom: 1px solid #1C1C24;
-            position: sticky;
-            top: 0;
-            z-index: 200;
+            display: flex;
+            justify-content: space-between;
         }
         .app-header h1 {
             font-size: 24px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #8B5CF6; /* Premium Sea Soul Violet Accent */
+            color: #8B5CF6;
             text-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
         }
 
-        /* SCREEN FRAME CONTAINER LAYER */
         .screen-content {
             padding: 16px 16px 90px 16px;
-            display: none; /* Controlled explicitly via JS */
+            display: none;
         }
         .screen-content.active {
             display: block !important;
         }
 
-        /* --- TAB 1: DISCOVER (SEA SOUL STRUCTURED CARDS) --- */
+        /* DISCOVER FEED */
         .character-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-top: 4px;
         }
         .char-card {
             background: #111116;
@@ -65,18 +55,12 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            position: relative;
-        }
-        .char-card-img-wrapper {
-            width: 100%;
-            aspect-ratio: 1;
-            position: relative;
-            background-color: #16161F;
         }
         .char-card img {
             width: 100%;
-            height: 100%;
+            aspect-ratio: 1;
             object-fit: cover;
+            background: #16161F;
         }
         .char-card-info {
             padding: 12px;
@@ -87,18 +71,12 @@
         .char-card-name {
             font-size: 15px;
             font-weight: 700;
-            margin-bottom: 2px;
-            color: #FFFFFF;
+            margin-bottom: 4px;
         }
         .char-card-tagline {
             font-size: 12px;
             color: #8E8E9F;
-            line-height: 1.4;
             margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
         .char-card-btn {
             background: #8B5CF6;
@@ -108,21 +86,13 @@
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            margin-top: auto;
         }
 
-        /* --- TAB 2: UNFILTERED CREATION SHEET --- */
+        /* CREATION FIELDS */
         .creation-sheet {
             display: flex;
             flex-direction: column;
             gap: 14px;
-        }
-        .input-row-twin {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
         }
         .input-group {
             display: flex;
@@ -133,8 +103,6 @@
             font-size: 13px;
             font-weight: 600;
             color: #8E8E9F;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .input-group input, .input-group textarea {
             background: #111116;
@@ -144,186 +112,9 @@
             color: white;
             font-size: 15px;
             outline: none;
-            width: 100%;
-        }
-        .input-group input:focus, .input-group textarea:focus {
-            border-color: #8B5CF6;
-            background: #13131A;
-        }
-        .input-group textarea {
-            resize: none;
-            height: 90px;
-        }
-        
-        /* UNRESTRICTED CHIP CHANNELS */
-        .philosophy-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        .style-chip {
-            background: #111116;
-            border: 1px solid #1C1C24;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: #8E8E9F;
-            cursor: pointer;
-        }
-        .style-chip.selected {
-            border-color: #8B5CF6;
-            color: #FFFFFF;
-            background: rgba(139, 92, 246, 0.15);
         }
 
-        /* DUAL MEDIA FILE UPLOADS */
-        .file-upload-wrapper {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        .custom-file-btn {
-            background: #111116;
-            border: 1px dashed #2C2C3A;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            color: #8E8E9F;
-        }
-        .custom-file-btn.loaded {
-            border-color: #8B5CF6;
-            color: #8B5CF6;
-            background: rgba(139, 92, 246, 0.05);
-        }
-
-        .submit-btn {
-            background: #8B5CF6;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 6px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        /* --- TAB 3: IMMERSIVE CHATS SCREEN FRAME --- */
-        #chats-screen {
-            padding: 0;
-            position: fixed;
-            top: 61px; /* Aligns smoothly right below header */
-            bottom: 65px; /* Aligns smoothly above nav bar */
-            left: 0;
-            width: 100%;
-            display: none;
-        }
-        .chat-window {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            background-color: #060608;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .chat-wallpaper-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(6, 6, 8, 0.88); /* Ensures clean text readability over wallpapers */
-            z-index: 1;
-        }
-        .chat-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(13, 13, 17, 0.85);
-            backdrop-filter: blur(15px);
-            z-index: 2;
-        }
-        .chat-header-name {
-            font-size: 17px;
-            font-weight: 700;
-            color: #FFFFFF;
-        }
-        .chat-messages-container {
-            flex: 1;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            overflow-y: auto;
-            z-index: 2;
-        }
-        .msg-bubble {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 15px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            white-space: pre-wrap; /* Infinite text formatting container */
-        }
-        .msg-assistant {
-            background: rgba(22, 22, 28, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            color: #E4E4E7;
-        }
-        .msg-user {
-            background: #8B5CF6;
-            color: #FFFFFF;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .chat-input-area {
-            background: #0D0D11;
-            border-top: 1px solid #1C1C24;
-            padding: 12px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            z-index: 2;
-        }
-        .chat-input-box {
-            flex: 1;
-            background: #16161F;
-            border: 1px solid #2C2C3A;
-            border-radius: 24px;
-            padding: 12px 16px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-        .chat-input-box:focus {
-            border-color: #8B5CF6;
-        }
-        .chat-send-btn {
-            background: #8B5CF6;
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        /* --- FIXED BOTTOM NAVIGATION TRAY --- */
+        /* FIXED NAV TRAY */
         .bottom-nav-tray {
             position: fixed;
             bottom: 0;
@@ -341,4 +132,108 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            
+            color: #62627A;
+            font-size: 11px;
+            font-weight: 600;
+            gap: 4px;
+            width: 33%;
+        }
+        .nav-item.active {
+            color: #8B5CF6;
+        }
+        .nav-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <h1>Quinn AI</h1>
+    </div>
+
+    <!-- TAB 1: DISCOVER SCREEN -->
+    <div id="discover-screen" class="screen-content active">
+        <div class="character-grid">
+            <div class="char-card">
+                <img src="https://unsplash.com" alt="Avatar">
+                <div class="char-card-info">
+                    <div class="char-card-name">Georgie</div>
+                    <div class="char-card-tagline">Your custom unfiltered AI companion.</div>
+                    <button class="char-card-btn" onclick="showPage('chats-screen')">Initialize Chat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: CREATE SCREEN -->
+    <div id="create-screen" class="screen-content">
+        <div class="creation-sheet">
+            <div class="input-group">
+                <label>Character Name</label>
+                <input type="text" placeholder="Matrix name...">
+            </div>
+            <div class="input-group">
+                <label>Tagline</label>
+                <input type="text" placeholder="Short description...">
+            </div>
+            <div class="input-group">
+                <label>Personality Core</label>
+                <textarea placeholder="Behavior instructions..."></textarea>
+            </div>
+            <button class="char-card-btn" style="padding:14px; font-size:15px;">Compile Character Profile</button>
+        </div>
+    </div>
+
+    <!-- TAB 3: CHATS SCREEN -->
+    <div id="chats-screen" class="screen-content">
+        <div style="background: #111116; padding: 16px; border-radius: 12px; margin-bottom: 12px;">
+            <p style="color:#8E8E9F; font-size:14px; margin-bottom:8px;">Georgie</p>
+            <p>Hey there! Welcome to Quinn AI. Your parameters are entirely open.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Type a message..." style="flex:1; background:#111116; border:1px solid #1C1C24; padding:12px; border-radius:24px; color:white; outline:none;">
+            <button style="background:#8B5CF6; border:none; width:44px; height:44px; border-radius:50%; color:white;">➔</button>
+        </div>
+    </div>
+
+    <!-- NAVIGATION TRAY -->
+    <div class="bottom-nav-tray">
+        <div class="nav-item active" id="tab-disc" onclick="showPage('discover-screen', 'tab-disc')">
+            <span class="nav-icon">🪐</span>
+            <span>Discover</span>
+        </div>
+        <div class="nav-item" id="tab-cre" onclick="showPage('create-screen', 'tab-cre')">
+            <span class="nav-icon">🔮</span>
+            <span>Create</span>
+        </div>
+        <div class="nav-item" id="tab-cha" onclick="showPage('chats-screen', 'tab-cha')">
+            <span class="nav-icon">💜</span>
+            <span>Chats</span>
+        </div>
+    </div>
+
+    <script>
+        // Simplified, error-proof page router
+        function showPage(screenId, tabId) {
+            // Hide all pages manually
+            document.getElementById('discover-screen').classList.remove('active');
+            document.getElementById('create-screen').classList.remove('active');
+            document.getElementById('chats-screen').classList.remove('active');
+
+            // Deactivate all button colors
+            document.getElementById('tab-disc').classList.remove('active');
+            document.getElementById('tab-cre').classList.remove('active');
+            document.getElementById('tab-cha').classList.remove('active');
+
+            // Turn on the selected elements
+            document.getElementById(screenId).classList.add('active');
+            if(tabId) {
+                document.getElementById(tabId).classList.add('active');
+            } else {
+                document.getElementById('tab-cha').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
