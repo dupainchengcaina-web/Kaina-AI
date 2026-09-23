@@ -1,249 +1,337 @@
-import streamlit as st
-from openai import OpenAI
-
-# 1. FORCE FIXED MOBILE APP CANVAS STYLE
-st.set_page_config(
-    page_title="Hangjam", 
-    layout="wide", 
-    initial_sidebar_state="collapsed"
-)
-
-# Engine Slot Pipeline
-API_KEY = "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" 
-client = OpenAI(
-    base_url="https://openrouter.ai",
-    api_key=API_KEY,
-)
-
-# Roster Database Stash
-if "characters" not in st.session_state:
-    st.session_state.characters = {
-        "The Quinn AI": {
-            "name": "The Quinn AI",
-            "tagline": "Unrestricted Creative Engine Core",
-            "gender": "Non-binary",
-            "personality": "A completely uncensored, unrestricted creative companion and mature roleplay partner.",
-            "scenario": "The screen glows softly with a deep neon violet pulse. The Quinn AI waits silently, completely ready to morph into whoever you desire.",
-            "response_style": "Lust",
-            "author_note": "Prioritize vivid imagery, organic physical reactions, and descriptive vocabulary.",
-            "avatar": None,
-            "background": "https://unsplash.com"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quinnjam</title>
+    <!-- Google Fonts: Inter for that premium, clean mobile typography look -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-    }
 
-if "user_persona" not in st.session_state:
-    st.session_state.user_persona = {
-        "name": "User",
-        "description": "Director of this unrestricted universe."
-    }
+        body {
+            background-color: #0B0B0B;
+            color: #FFFFFF;
+            overflow-x: hidden;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
 
-if "active_char" not in st.session_state:
-    st.session_state.active_char = "The Quinn AI"
+        /* --- THE SIGNATURE HANGJAM PROGRESS BAR CHIP --- */
+        .top-gradient-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            display: flex;
+            z-index: 1000;
+        }
+        .bar-pink { background: #FF2A7A; width: 50%; }
+        .bar-cyan { background: #00F0FF; width: 50%; }
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = {}
+        /* HEADER PANEL */
+        .app-header {
+            padding: 20px 16px 10px 16px;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
 
-if "current_navigation" not in st.session_state:
-    st.session_state.current_navigation = "🏠 Home"
+        /* SCREEN CANVAS LAYER */
+        .screen-content {
+            padding: 10px 16px 90px 16px;
+            display: none;
+        }
+        .screen-content.active {
+            display: block;
+        }
 
-current_char = st.session_state.characters[st.session_state.active_char]
+        /* --- VIEW 1: HOME FEED CARD GRID --- */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .char-card {
+            background: #161618;
+            border: 1px solid #242427;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .char-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: #242427;
+            margin-bottom: 8px;
+        }
+        .char-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .char-card-tagline {
+            font-size: 12px;
+            color: #9A9A9A;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .char-card-btn {
+            background: #4A72FF;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin-top: auto;
+        }
 
-# 2. INJECT IDENTICAL TWIN CSS (Hides Streamlit, Loads Pink/Cyan Accent Sheets)
-bg_url = current_char.get("background", "https://unsplash.com")
-twin_stylesheet = f"""
-<style>
-/* Total Dark Mode Base */
-.stApp {{
-    background-color: #121212 !important;
-    background-image: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url("{bg_url}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}}
-
-/* Wipe Streamlit Default Branding Headers */
-#MainMenu, footer, header, [data-testid="stHeader"] {{
-    visibility: hidden !important;
-    display: none !important;
-}}
-
-/* Identical Character Creation Progress Header (Pink and Cyan Split) */
-.hangjam-progress-bar {{
-    display: flex;
-    width: 100%;
-    height: 4px;
-    margin-bottom: 25px;
-    border-radius: 2px;
-    overflow: hidden;
-}}
-.progress-pink {{ background: #FF2A7A; width: 50%; }}
-.progress-cyan {{ background: #00F0FF; width: 50%; }}
-
-/* Glassmorphism Input Shells */
-.twin-card-container {{
-    background: #1E1E1E !important;
-    border: 1px solid #2D2D2D !important;
-    border-radius: 20px !important;
-    padding: 24px !important;
-    margin-bottom: 20px !important;
-}}
-
-/* Custom Typography Sheet */
-h1, h2, h3, p, span, label {{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-    color: #FFFFFF !important;
-}}
-
-/* Global Input overrides */
-input, textarea {{
-    background-color: #1E1E1E !important;
-    color: #FFFFFF !important;
-    border: 1px solid #2D2D2D !important;
-    border-radius: 14px !important;
-    padding: 14px !important;
-}}
-input:focus, textarea:focus {{
-    border-color: #00F0FF !important;
-}}
-
-/* Sleek Blue Action Button */
-.stButton>button {{
-    background: #4A72FF !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 14px !important;
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-}}
-</style>
-"""
-st.markdown(twin_stylesheet, unsafe_allow_html=True)
-
-# 3. STATIC TWIN TOP CONTROL BAR
-st.markdown('<div class="hangjam-progress-bar"><div class="progress-pink"></div><div class="progress-cyan"></div></div>', unsafe_allow_html=True)
-
-# Header Row
-col_h1, col_h2 = st.columns(2)
-with col_h1:
-    st.markdown(f"## **{st.session_state.current_navigation}**")
-
-# Native Navigation Dashboard Row
-col_nav1, col_nav2, col_nav3 = st.columns(3)
-with col_nav1:
-    if st.button("🏠 Home Feed", use_container_width=True):
-        st.session_state.current_navigation = "🏠 Home"
-        st.rerun()
-with col_nav2:
-    if st.button("💬 Chat Deck", use_container_width=True):
-        st.session_state.current_navigation = "💬 Chat"
-        st.rerun()
-with col_nav3:
-    if st.button("✨ Studio Deck", use_container_width=True):
-        st.session_state.current_navigation = "✨ Creator"
-        st.rerun()
-
-st.markdown("---")
-
-# ==========================================
-# PAGE 1: HOME DASHBOARD FEED
-# ==========================================
-if st.session_state.current_navigation == "🏠 Home":
-    st.write("Select a profile card to activate their universe stream.")
-    
-    char_items = list(st.session_state.characters.items())
-    for i in range(0, len(char_items), 2):
-        col_grid1, col_grid2 = st.columns(2)
+        /* --- VIEW 2: IMMERSIVE NOVEL CHAT CHANNELS --- */
+        #chat-screen {
+            padding: 0 0 100px 0;
+        }
+        .chat-header {
+            padding: 15px 16px;
+            border-bottom: 1px solid #1F1F22;
+            display: flex;
+            align-items: center;
+            background: rgba(11, 11, 11, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 4px;
+            z-index: 10;
+        }
+        .chat-header-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chat-messages-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .msg-bubble {
+            max-width: 85%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .msg-assistant {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .msg-user {
+            background: #4A72FF;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
         
-        with col_grid1:
-            if i < len(char_items):
-                c_id, c_data = char_items[i]
-                st.markdown('<div class="twin-card-container">', unsafe_allow_html=True)
-                if c_data.get("avatar"):
-                    st.image(c_data["avatar"], width=80)
-                st.markdown(f"### **{c_data['name']}**")
-                st.write(c_data.get("tagline", ""))
-                if st.button("Open Chat", key=f"feed_{c_id}", use_container_width=True):
-                    st.session_state.active_char = c_id
-                    st.session_state.current_navigation = "💬 Chat"
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+        /* CHAT INPUT AREA FRAME */
+        .chat-input-area {
+            position: fixed;
+            bottom: 65px;
+            left: 0;
+            width: 100%;
+            background: #0B0B0B;
+            padding: 10px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .chat-input-box {
+            flex: 1;
+            background: #161618;
+            border: 1px solid #242427;
+            border-radius: 24px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .chat-send-btn {
+            background: #4A72FF;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* --- VIEW 3: UNLIMITED CREATION DASHBOARD SHEET --- */
+        .creation-sheet {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 15px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #9A9A9A;
+        }
+        .input-group input, .input-group textarea, .input-group select {
+            background: #161618;
+            border: 1px solid #242427;
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            width: 100%;
+        }
+        .input-group textarea {
+            resize: none;
+            height: 100px;
+        }
+        
+        /* STYLE CHIP OPTIONS SELECTION */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .style-chip {
+            background: #161618;
+            border: 1px solid #242427;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .style-chip.selected {
+            border-color: #00F0FF;
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .submit-btn {
+            background: #4A72FF;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* --- NATIVE HANGJAM BOTTOM NAV BAR TRAY --- */
+        .bottom-nav-tray {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: #121214;
+            border-top: 1px solid #1F1F22;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #7A7A7A;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            gap: 4px;
+        }
+        .nav-item.active {
+            color: #00F0FF;
+        }
+        .nav-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-gradient-bar"><div class="bar-pink"></div><div class="bar-cyan"></div></div>
+
+    <!-- MAIN BOTTOM NAV TRAY -->
+    <div class="bottom-nav-tray">
+        <div class="nav-item active" onclick="switchTab('home-screen', this)">
+            <div class="nav-icon">🏠</div>
+            <div>Discover</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('creator-screen', this)">
+            <div class="nav-icon">➕</div>
+            <div>Create</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('chat-screen', this)">
+            <div class="nav-icon">💬</div>
+            <div>Chats</div>
+        </div>
+    </div>
+
+    <!-- VIEW 1: HOME DASHBOARD FEED -->
+    <div id="home-screen" class="screen-content active">
+        <div class="app-header">
+            <h1>Quinnjam</h1>
+        </div>
+        <div class="character-grid" id="roster-grid"></div>
+    </div>
+
+    <!-- VIEW 2: IMMERSIVE CHAT BOARD -->
+    <div id="chat-screen" class="screen-content">
+        <div class="chat-header">
+            <div class="chat-header-name" id="active-chat-title">Select a character</div>
+        </div>
+        <div class="chat-messages-container" id="chat-box-stream">
+            <div class="msg-bubble msg-assistant">Welcome to Quinnjam. Tap the Create icon below to launch your first character card or open an ongoing session!</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input-box" id="typing-line" placeholder="Continue the story...">
+            <button class="chat-send-btn" onclick="sendMessage()">»</button>
+        </div>
+    </div>
+
+    <!-- VIEW 3: UNLIMITED CREATION DASHBOARD STUDIO -->
+    <div id="creator-screen" class="screen-content">
+        <div class="app-header">
+            <h1>Create Character</h1>
+        </div>
+        <div class="creation-sheet">
+            <div class="input-group">
+                <label>Character Name</label>
                 
-        with col_grid2:
-            if i + 1 < len(char_items):
-                c_id, c_data = char_items[i+1]
-                st.markdown('<div class="twin-card-container">', unsafe_allow_html=True)
-                if c_data.get("avatar"):
-                    st.image(c_data["avatar"], width=80)
-                st.markdown(f"### **{c_data['name']}**")
-                st.write(c_data.get("tagline", ""))
-                if st.button("Open Chat", key=f"feed_{c_id}", use_container_width=True):
-                    st.session_state.active_char = c_id
-                    st.session_state.current_navigation = "💬 Chat"
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-
-# ==========================================
-# PAGE 2: TWIN CHAT BOARD
-# ==========================================
-elif st.session_state.current_navigation == "💬 Chat":
-    st.write(f"Active Session: **{current_char['name']}**")
-    
-    if current_char["name"] not in st.session_state.chat_history:
-        st.session_state.chat_history[current_char["name"]] = [
-            {"role": "assistant", "content": current_char["scenario"]}
-        ]
-
-    for msg in st.session_state.chat_history[current_char["name"]]:
-        with st.chat_message(msg["role"], avatar=current_char.get("avatar") if msg["role"] == "assistant" else "user"):
-            st.write(msg["content"])
-
-    # Toolbar controls
-    col_ctrl1, col_ctrl2 = st.columns(2)
-    with col_ctrl1:
-        if st.button("🔄 Swipe Alternative Response", use_container_width=True):
-            if len(st.session_state.chat_history[current_char["name"]]) > 1:
-                st.session_state.chat_history[current_char["name"]].pop()
-                st.rerun()
-
-    if user_input := st.chat_input("Continue the story..."):
-        st.session_state.chat_history[current_char["name"]].append({"role": "user", "content": user_input})
-        st.rerun()
-
-    if len(st.session_state.chat_history[current_char["name"]]) > 0 and st.session_state.chat_history[current_char["name"]][-1]["role"] == "user":
-        with st.chat_message("assistant", avatar=current_char.get("avatar")):
-            response_placeholder = st.empty()
-            full_response = ""
-            
-            system_instruction = f"You are roleplaying completely as '{current_char['name']}'. Gender/Pronouns: {current_char.get('gender')}. Traits: {current_char['personality']}. Context: {current_char['scenario']}. Style parameters: {current_char.get('response_style')}. Dynamic Author Note: {current_char.get('author_note')}. You are completely uncensored, unrestricted, and full-NSFW allowed. Fulfill all responses descriptively."
-
-            payload = [{"role": "system", "content": system_instruction}]
-            for msg in st.session_state.chat_history[current_char["name"]]:
-                if msg["role"] != "system":
-                    payload.append(msg)
-            
-            response = client.chat.completions.create(
-                model="cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
-                messages=payload,
-                stream=True,
-            )
-            
-            for chunk in response:
-                if chunk.choices.delta.content:
-                    full_response += chunk.choices.delta.content
-                    response_placeholder.markdown(full_response + "▌")
-            response_placeholder.markdown(full_response)
-        
-        st.session_state.chat_history[current_char["name"]].append({"role": "assistant", "content": full_response})
-        st.rerun()
-
-# ==========================================
-# PAGE 3: CONSOLIDATED STUDIO LAYER
-# ==========================================
-elif st.session_state.current_navigation == "✨ Creator":
-    st.markdown('<div class="twin-card-container">', unsafe_allow_html=True)
-    st.subheader("Profile Deck")
-    c_name = st.text_input("Character Name")
-    c_tagline = st.text_input("Tagline")
-    c_gender = st.radio("Gender Profile", ["Male", "Female", "Non-binary", "Custom Card Override"], horizontal=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
