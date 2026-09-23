@@ -20,6 +20,7 @@
             min-height: 100vh;
         }
 
+        /* PREMIUM VIOLET BRAND HEADER PANEL */
         .app-header {
             padding: 18px 16px;
             background: #0D0D11;
@@ -42,79 +43,7 @@
             display: block !important;
         }
 
-        /* DISCOVER FEED */
-        .character-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .char-card {
-            background: #111116;
-            border: 1px solid #1C1C24;
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .char-card img {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            background: #16161F;
-        }
-        .char-card-info {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .char-card-name {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .char-card-tagline {
-            font-size: 12px;
-            color: #8E8E9F;
-            margin-bottom: 12px;
-        }
-        .char-card-btn {
-            background: #8B5CF6;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* CREATION FIELDS */
-        .creation-sheet {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .input-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #8E8E9F;
-        }
-        .input-group input, .input-group textarea {
-            background: #111116;
-            border: 1px solid #1C1C24;
-            border-radius: 12px;
-            padding: 12px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-
-        /* FIXED NAV TRAY */
+        /* FIXED BOTTOM NAVIGATION TRAY PLACEHOLDER */
         .bottom-nav-tray {
             position: fixed;
             bottom: 0;
@@ -148,92 +77,34 @@
 </head>
 <body>
 
+    <!-- BRAND TOP BAR -->
     <div class="app-header">
         <h1>Quinn AI</h1>
     </div>
 
-    <!-- TAB 1: DISCOVER SCREEN -->
+    <!-- MAIN APP ACTIVE CANVAS AREA -->
     <div id="discover-screen" class="screen-content active">
-        <div class="character-grid">
-            <div class="char-card">
-                <img src="https://unsplash.com" alt="Avatar">
-                <div class="char-card-info">
-                    <div class="char-card-name">Georgie</div>
-                    <div class="char-card-tagline">Your custom unfiltered AI companion.</div>
-                    <button class="char-card-btn" onclick="showPage('chats-screen')">Initialize Chat</button>
-                </div>
-            </div>
+        <div style="text-align: center; margin-top: 40px; color: #8E8E9F;">
+            <p style="font-size: 18px; font-weight: 600; color: #FFFFFF; margin-bottom: 8px;">Base Frame Loaded!</p>
+            <p>Your header and nav rules are running perfectly.</p>
         </div>
     </div>
 
-    <!-- TAB 2: CREATE SCREEN -->
-    <div id="create-screen" class="screen-content">
-        <div class="creation-sheet">
-            <div class="input-group">
-                <label>Character Name</label>
-                <input type="text" placeholder="Matrix name...">
-            </div>
-            <div class="input-group">
-                <label>Tagline</label>
-                <input type="text" placeholder="Short description...">
-            </div>
-            <div class="input-group">
-                <label>Personality Core</label>
-                <textarea placeholder="Behavior instructions..."></textarea>
-            </div>
-            <button class="char-card-btn" style="padding:14px; font-size:15px;">Compile Character Profile</button>
-        </div>
-    </div>
-
-    <!-- TAB 3: CHATS SCREEN -->
-    <div id="chats-screen" class="screen-content">
-        <div style="background: #111116; padding: 16px; border-radius: 12px; margin-bottom: 12px;">
-            <p style="color:#8E8E9F; font-size:14px; margin-bottom:8px;">Georgie</p>
-            <p>Hey there! Welcome to Quinn AI. Your parameters are entirely open.</p>
-        </div>
-        <div style="display:flex; gap:8px;">
-            <input type="text" placeholder="Type a message..." style="flex:1; background:#111116; border:1px solid #1C1C24; padding:12px; border-radius:24px; color:white; outline:none;">
-            <button style="background:#8B5CF6; border:none; width:44px; height:44px; border-radius:50%; color:white;">➔</button>
-        </div>
-    </div>
-
-    <!-- NAVIGATION TRAY -->
+    <!-- BOTTOM ACTION NAVIGATION CONTROLS -->
     <div class="bottom-nav-tray">
-        <div class="nav-item active" id="tab-disc" onclick="showPage('discover-screen', 'tab-disc')">
+        <div class="nav-item active">
             <span class="nav-icon">🪐</span>
             <span>Discover</span>
         </div>
-        <div class="nav-item" id="tab-cre" onclick="showPage('create-screen', 'tab-cre')">
+        <div class="nav-item">
             <span class="nav-icon">🔮</span>
             <span>Create</span>
         </div>
-        <div class="nav-item" id="tab-cha" onclick="showPage('chats-screen', 'tab-cha')">
+        <div class="nav-item">
             <span class="nav-icon">💜</span>
             <span>Chats</span>
         </div>
     </div>
 
-    <script>
-        // Simplified, error-proof page router
-        function showPage(screenId, tabId) {
-            // Hide all pages manually
-            document.getElementById('discover-screen').classList.remove('active');
-            document.getElementById('create-screen').classList.remove('active');
-            document.getElementById('chats-screen').classList.remove('active');
-
-            // Deactivate all button colors
-            document.getElementById('tab-disc').classList.remove('active');
-            document.getElementById('tab-cre').classList.remove('active');
-            document.getElementById('tab-cha').classList.remove('active');
-
-            // Turn on the selected elements
-            document.getElementById(screenId).classList.add('active');
-            if(tabId) {
-                document.getElementById(tabId).classList.add('active');
-            } else {
-                document.getElementById('tab-cha').classList.add('active');
-            }
-        }
-    </script>
 </body>
 </html>
