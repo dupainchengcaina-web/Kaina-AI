@@ -110,7 +110,7 @@
 
         /* --- VIEW 2: IMMERSIVE NOVEL CHAT CHANNELS --- */
         #chat-screen {
-            padding: 0 0 100px 0;
+            padding: 0 0 140px 0;
         }
         .chat-header {
             padding: 15px 16px;
@@ -163,6 +163,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            z-index: 99;
         }
         .chat-input-box {
             flex: 1;
@@ -275,6 +276,9 @@
             font-size: 11px;
             font-weight: 500;
             gap: 4px;
+            width: 33%;
+            height: 100%;
+            justify-content: center;
         }
         .nav-item.active {
             color: #00F0FF;
@@ -290,15 +294,15 @@
 
     <!-- MAIN BOTTOM NAV TRAY -->
     <div class="bottom-nav-tray">
-        <div class="nav-item active" onclick="switchTab('home-screen', this)">
+        <div id="nav-home" class="nav-item active" onclick="switchTab('home-screen', 'nav-home')">
             <div class="nav-icon">🏠</div>
             <div>Discover</div>
         </div>
-        <div class="nav-item" onclick="switchTab('creator-screen', this)">
+        <div id="nav-creator" class="nav-item" onclick="switchTab('creator-screen', 'nav-creator')">
             <div class="nav-icon">➕</div>
             <div>Create</div>
         </div>
-        <div class="nav-item" onclick="switchTab('chat-screen', this)">
+        <div id="nav-chat" class="nav-item" onclick="switchTab('chat-screen', 'nav-chat')">
             <div class="nav-icon">💬</div>
             <div>Chats</div>
         </div>
@@ -331,7 +335,4 @@
         <div class="app-header">
             <h1>Create Character</h1>
         </div>
-        <div class="creation-sheet">
-            <div class="input-group">
-                <label>Character Name</label>
-                                       
+        
