@@ -65,7 +65,7 @@ twin_stylesheet = f"""
 #MainMenu, footer, header, [data-testid="stHeader"] {{
     visibility: hidden !important;
     display: none !important;
-}
+}}
 
 /* Identical Character Creation Progress Header (Pink and Cyan Split) */
 .hangjam-progress-bar {{
@@ -123,7 +123,7 @@ st.markdown(twin_stylesheet, unsafe_allow_html=True)
 st.markdown('<div class="hangjam-progress-bar"><div class="progress-pink"></div><div class="progress-cyan"></div></div>', unsafe_allow_html=True)
 
 # Header Row
-col_h1, col_h2 = st.columns([4, 1])
+col_h1, col_h2 = st.columns(2)
 with col_h1:
     st.markdown(f"## **{st.session_state.current_navigation}**")
 
