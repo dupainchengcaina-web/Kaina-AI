@@ -100,7 +100,7 @@ if st.session_state.current_page == "🏠 Roster":
     for char_id, char_data in st.session_state.characters.items():
         with st.container():
             st.markdown(f'<div class="char-card">', unsafe_allow_html=True)
-            col1, col2 = st.columns()
+            col1, col2 = st.columns(2)
             with col1:
                 if char_data.get("avatar"):
                     st.image(char_data["avatar"], width=80)
