@@ -5,7 +5,7 @@ st.set_page_config(page_title="The Quinn AI", layout="centered")
 st.title("💋 The Quinn AI - Unrestricted Universe")
 
 # Securely connect to your unrestricted model provider
-API_KEY = "your-openrouter-api-key-here" 
+API_KEY = "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"
 client = OpenAI(
     base_url="https://openrouter.ai",
     api_key=API_KEY,
